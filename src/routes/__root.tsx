@@ -1,10 +1,13 @@
 import type { QueryClient } from '@tanstack/react-query'
 import {
   HeadContent,
+  Outlet,
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
 
+import { Header } from '#/components/header'
+import { authQueryOptions } from '#/lib/auth'
 import appCss from '../styles.css?url'
 
 export interface RouterContext {
@@ -12,6 +15,12 @@ export interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  // Resolved on the server for the first render, so the header is correct
+  // on the first paint after a hard refresh. Re-runs on every navigation.
+  beforeLoad: async ({ context }) => {
+    const auth = await context.queryClient.ensureQueryData(authQueryOptions())
+    return { auth }
+  },
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
@@ -21,7 +30,17 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     links: [{ rel: 'stylesheet', href: appCss }],
   }),
   shellComponent: RootDocument,
+  component: RootLayout,
 })
+
+function RootLayout() {
+  return (
+    <>
+      <Header />
+      <Outlet />
+    </>
+  )
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
@@ -30,7 +49,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {/* The site header belongs here. See TASK.md. */}
         {children}
         <Scripts />
       </body>
