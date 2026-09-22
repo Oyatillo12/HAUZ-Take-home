@@ -1,4 +1,14 @@
-import { Link, useLocation, useRouteContext } from '@tanstack/react-router'
+import {
+  Link,
+  useLocation,
+  useRouteContext,
+  useRouter,
+} from '@tanstack/react-router'
+import { useServerFn } from '@tanstack/react-start'
+import { useState } from 'react'
+
+import { refreshAuth } from '#/lib/auth'
+import { signOut } from '#/server/sign-out'
 
 export function Header() {
   const auth = useRouteContext({ from: '__root__', select: (c) => c.auth })
@@ -31,8 +41,39 @@ export function Header() {
               Finish setup
             </Link>
           )}
+          <LogOutButton />
         </span>
       )}
     </header>
+  )
+}
+
+function LogOutButton() {
+  const router = useRouter()
+  const queryClient = useRouteContext({
+    from: '__root__',
+    select: (c) => c.queryClient,
+  })
+  const logOut = useServerFn(signOut)
+  const [pending, setPending] = useState(false)
+
+  async function onClick() {
+    if (pending) return
+    setPending(true)
+    try {
+      await logOut()
+      await refreshAuth(queryClient, router)
+      await router.navigate({ to: '/', replace: true })
+    } catch (cause) {
+      console.error(cause)
+    } finally {
+      setPending(false)
+    }
+  }
+
+  return (
+    <button type="button" style={{ margin: 0 }} disabled={pending} onClick={onClick}>
+      {pending ? 'Logging out...' : 'Log out'}
+    </button>
   )
 }
