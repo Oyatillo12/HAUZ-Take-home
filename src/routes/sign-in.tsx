@@ -3,7 +3,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { useState, type FormEvent } from 'react'
 import { z } from 'zod'
 
-import { AUTH_QUERY_KEY, refreshAuth, type AuthState } from '#/lib/auth'
+import { refreshAuth } from '#/lib/auth'
 import { safeRedirect } from '#/lib/redirect'
 import { requestCode, verifyCode } from '#/server/sign-in'
 
@@ -66,8 +66,7 @@ function SignIn() {
         return
       }
       // The cookie is set. Reload who we are, then decide where to go.
-      await refreshAuth(queryClient, router)
-      const auth = queryClient.getQueryData<AuthState>(AUTH_QUERY_KEY)
+      const auth = await refreshAuth(queryClient, router)
       const href = safeRedirect(target)
       if (auth?.account) {
         await router.navigate({ href, replace: true })
