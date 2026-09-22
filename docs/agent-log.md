@@ -20,8 +20,25 @@ prompts that drove the work and the mistakes that were caught.
 
 ## Mistakes the agent made
 
-Things caught during the session, with where they were fixed. Add the ones
-you find in review here, linked to the fixing commit.
+### Caught by me (the author)
+
+1. **Header did not update after log out or sign-in; only a hard refresh
+   showed the new state.** The agent's `refreshAuth` used
+   `invalidateQueries` + `router.invalidate()`. On a server-rendered page
+   the auth query is hydrated without a `queryFn`, so the refetch rejected
+   with "Missing queryFn", the rejection was swallowed, and `beforeLoad`
+   handed out the stale cache. I noticed it in the browser; the agent had
+   only verified SSR output with curl and server functions over HTTP, which
+   never exercises the client cache. Fixed in `1a560d2` (Fix header not
+   updating after sign-in, profile save and log out), verified afterwards
+   in a real Chrome with Playwright.
+2. **A shared server-side cache.** Found while investigating the above:
+   the starter's module-level `QueryClient` was kept as-is, so every
+   concurrent SSR request shared one cache and could have shown someone
+   else's auth in the header. Fixed in `a632311` (Create the QueryClient
+   per router, not per module).
+
+### Caught by the agent itself before or during commit
 
 1. **Treated a Function outage as "no account".** The first draft of
    `getAuth` set `account: null` when the Function call failed, while its
@@ -56,3 +73,7 @@ a multi-heredoc shell command failed to parse and had to be split.
   reuse of the dead cookie.
 - Sign-in and onboarding were also completed once in a real browser by
   the author.
+- After the header fix: Playwright driving the installed Chrome (kept
+  outside the repo) loaded `/profile` signed in, changed and restored the
+  first name, and logged out; the header updated after each step without a
+  reload and the cookie was gone at the end.

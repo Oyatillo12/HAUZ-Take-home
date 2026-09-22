@@ -17,8 +17,10 @@
   the current user and their Personal Account on the server through
   react-query, and puts the result in the router context. The header reads
   the context, so SSR renders the right thing on a hard refresh. Sign-in,
-  onboarding, profile edits and log out refetch that query and re-run
-  `beforeLoad`.
+  onboarding, profile edits and log out refetch that query with
+  `fetchQuery` (not `invalidateQueries`: a hydrated query has no `queryFn`)
+  and re-run `beforeLoad`. The `QueryClient` is created inside `getRouter`,
+  once per request on the server, so requests never share cached auth.
 - **The Function is the only path to `personal_accounts`.** A small typed
   wrapper over `createExecution` covers GET/POST/PATCH. The Function is
   unchanged.
