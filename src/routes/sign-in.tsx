@@ -46,6 +46,9 @@ function SignIn() {
       } else {
         setError(result.message)
       }
+    } catch (cause) {
+      console.error(cause)
+      setError('Something went wrong. Try again.')
     } finally {
       setPending(false)
     }
@@ -75,6 +78,9 @@ function SignIn() {
           replace: true,
         })
       }
+    } catch (cause) {
+      console.error(cause)
+      setError('Something went wrong. Try again.')
     } finally {
       setPending(false)
     }

@@ -62,6 +62,9 @@ function Onboarding() {
       }
       await refreshAuth(queryClient, router)
       await router.navigate({ href: safeRedirect(target), replace: true })
+    } catch (cause) {
+      console.error(cause)
+      setError('Something went wrong. Try again.')
     } finally {
       setPending(false)
     }
