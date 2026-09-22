@@ -1,3 +1,45 @@
+# HAUZ frontend take-home
+
+Email-code sign-in, onboarding, profile and log out on TanStack Start with
+Appwrite. `TASK.md` is the brief, `NOTES.md` the decisions, `docs/plan.md`
+the design that was agreed before coding.
+
+## Run it
+
+```bash
+nvm use 22            # Node 22 or newer; Vite 8 does not start on 18
+npm install
+cp .env.example .env  # fill in APPWRITE_PROJECT_ID and APPWRITE_API_KEY
+npm run appwrite:push # once, after `npx appwrite login`; see Setup below
+npm run dev           # http://localhost:3000
+```
+
+If `npm install` ever ran under an older Node, run it again under 22: the
+rolldown platform binding is an optional dependency and is skipped
+otherwise.
+
+Pages: `/sign-in`, `/onboarding`, `/profile`. The header on every page shows
+"Sign in" or the first name and "Log out". Sign-in codes come from Appwrite
+Cloud's mail server; check spam.
+
+Layout of what was added:
+
+```
+src/server/appwrite.ts          Appwrite clients + session cookie (server only)
+src/server/auth.ts              getAuth: who is signed in, with their account
+src/server/sign-in.ts           requestCode, verifyCode
+src/server/sign-out.ts          signOut
+src/server/personal-account.ts  typed calls to the Function
+src/server/account.ts           createAccount, updateAccount
+src/lib/                        client-safe helpers (auth query, redirect, patch)
+src/components/header.tsx
+src/routes/                     __root, index, sign-in, onboarding, profile
+```
+
+---
+
+The rest of this file is the original starter README.
+
 # HAUZ frontend take-home starter
 
 A blank TanStack Start app plus the Appwrite Function you will call from it.
