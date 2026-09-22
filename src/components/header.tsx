@@ -24,6 +24,8 @@ export function Header() {
         <span style={{ display: 'flex', gap: '0.75rem', alignItems: 'baseline' }}>
           {auth.account ? (
             <Link to="/profile">{auth.account.firstName}</Link>
+          ) : auth.accountUnavailable ? (
+            <span>{auth.user.email}</span>
           ) : (
             <Link to="/onboarding" search={{ redirect: location.pathname }}>
               Finish setup
