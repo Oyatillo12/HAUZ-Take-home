@@ -1,8 +1,9 @@
 # Agent log
 
 Built with Claude Code (Claude Fable 5.1) in one session on 2026-09-22.
-The full session export is attached separately. This file lists the
-prompts that drove the work and the mistakes that were caught.
+The session transcript (prompts and answers, in English) is in
+`docs/agent-session.md`. This file lists the prompts that drove the work
+and the mistakes that were caught.
 
 ## Prompts (in order, translated from Uzbek where needed)
 
